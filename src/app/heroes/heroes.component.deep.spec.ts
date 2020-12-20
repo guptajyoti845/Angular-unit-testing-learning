@@ -39,4 +39,29 @@ describe("Heroes Component (Deep Test)", () => {
     expect(heroComponentDes[1].componentInstance.hero.name).toBe('Wonder Woman');
     expect(heroComponentDes[2].componentInstance.hero.name).toBe('SuperDude');
   })
+
+  it('should call heroService.deleteHero when the heroComponent delete button is clicked', () => {
+    spyOn(fixture.componentInstance,'deleteHero');
+    const heroComponents = fixture.debugElement.queryAll(By.directive(HeroComponent));
+    /* heroComponents[0].query(By.css('button'))
+        .triggerEventHandler('click', {stopPropagation:() => {}});*/
+    // (<HeroComponent>heroComponents[0].componentInstance).delete.emit(undefined);
+    heroComponents[0].triggerEventHandler('delete',null);
+    expect(fixture.componentInstance.deleteHero).toHaveBeenCalledWith(HEROES[0]);
+  })
+
+  it('should ad new Hero to the hero list when click to add button', () => {
+    //spyOn(fixture.componentInstance,'add');
+    const name = "Mr. Ice";
+    mockHeroService.addHero.and.returnValue(of({id: 5, name: name, strength: 90}));
+    const inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+    const addButton = fixture.debugElement.queryAll(By.css('button'))[0];
+    inputElement.value = name;
+    addButton.triggerEventHandler('click',null);
+    fixture.detectChanges();
+    const heroText = fixture.debugElement.query(By.css('ul')).nativeElement.textContent;
+    //expect(fixture.componentInstance.add).toHaveBeenCalledWith(name);
+    expect(heroText).toContain(name);
+  })
+
 })
